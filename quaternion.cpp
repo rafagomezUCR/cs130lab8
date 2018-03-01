@@ -14,18 +14,24 @@ float sqr(float t)
 quaternion slerp(float u, const quaternion& q0, const quaternion& q1)
 {
     //TODO: implement me!
-    vec3 v0 = q0.v.normalized();
-    vec3 v1 = q1.v.normalized();
+    quaternion v0 = q0.normalized();
+    quaternion v1 = q1.normalized();
     double dt = dot(v0,v1);
     if(dt < 0.0f){
 	v1 = -v1;
         dt = -dt;
     }
-    float angle = acos(dot(v0,v1));
-    quaternion q;
-    q.s = angle;
-    q.v  = ((sin((1-u)*angle)/(sin(angle)))*v0) + (((sin(u*angle))/(sin(angle)))*v1);
-    return q;
+    const double thresh = 0.9995;
+    if(dt > thresh){
+	 quaternion result = v0 + (v1 - v0)*u;
+	 result.normalized();
+	 return result;
+    }
+    double theta0 = acos(dt);
+    double theta = theta0 * u;
+    double s0 = cos(theta) - dt * sin(theta) / sin(theta0);
+    double s1 = sin(theta) / sin(theta0);
+    return (v0 * s0) + (v1 * s10;
 }
 
 void quaternion::from_angle_and_axis(float angle,const vec3& axis)
